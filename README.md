@@ -1,0 +1,1 @@
+# dotnet-energy-saving-mode
