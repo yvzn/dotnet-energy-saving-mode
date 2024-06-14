@@ -14,7 +14,8 @@ app.MapGet("/", (IEnergySavingModeStatus energySavingModeStatus) =>
 {
 	var status = new
 	{
-		timestamp = energySavingModeStatus.Timestamp
+		energySavingMode = energySavingModeStatus.Current.IsEnabled ? "Enabled" : "Disabled",
+		timestamp = energySavingModeStatus.Current.Timestamp.ToString("o")
 	};
 	return status;
 });

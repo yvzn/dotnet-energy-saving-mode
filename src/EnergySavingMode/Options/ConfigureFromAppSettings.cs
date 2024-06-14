@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
+using System.Globalization;
 
 namespace EnergySavingMode.Options;
 
@@ -20,11 +20,14 @@ internal class ConfigureFromAppSettings(IOptions<Settings> settings)
 	}
 
 	private static List<TimeRange> Convert(ICollection<string> daySchedule)
-		=> daySchedule.Select(Convert).ToList();
+		=> daySchedule.Select(Convert).OrderBy(t => t.Start).ToList();
 
 	private static TimeRange Convert(string timeRangeString)
 	{
-		var startAndEntTimes = timeRangeString.Split('-').Select(TimeOnly.Parse).ToArray();
-		return new(startAndEntTimes[0], startAndEntTimes[1]);
+		var startAndEndTimes = timeRangeString.Split('-').Select(Parse).ToArray();
+		return new(startAndEndTimes[0], startAndEndTimes[1]);
 	}
+
+	private static TimeOnly Parse(string s)
+		=> TimeOnly.Parse(s, CultureInfo.CurrentCulture);
 }

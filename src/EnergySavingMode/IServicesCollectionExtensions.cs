@@ -1,6 +1,7 @@
 using EnergySavingMode.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace EnergySavingMode
 {
@@ -23,7 +24,13 @@ namespace EnergySavingMode
 			services.AddOptions();
 
 			services.Configure<Options.Settings>(configurationSection);
+			services.AddSingleton<IValidateOptions<Options.Settings>, Options.SettingsValidation>();
+
 			services.ConfigureOptions<Options.ConfigureFromAppSettings>();
+			services.AddSingleton<IValidateOptions<Options.Configuration>, Options.ConfigurationValidation>();
+
+			services.AddOptionsWithValidateOnStart<Options.Settings>();
+			services.AddOptionsWithValidateOnStart<Options.Configuration>();
 
 			return services;
 		}
@@ -32,6 +39,8 @@ namespace EnergySavingMode
 			this IServiceCollection services)
 		{
 			services.AddScoped<IEnergySavingModeStatus, Status>();
+			services.AddScoped<Timeline>();
+			services.AddSingleton(TimeProvider.System);
 
 			return services;
 		}

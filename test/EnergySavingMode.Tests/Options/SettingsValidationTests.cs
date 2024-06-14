@@ -1,8 +1,8 @@
+using EnergySavingMode.Options;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using System;
 
-namespace EnergySavingMode.Options;
+namespace EnergySavingMode.Tests.Options;
 
 public class SettingsValidationTests
 {
@@ -100,7 +100,7 @@ public class SettingsValidationTests
 			// Assert
 			result.Failures.Should().ContainMatch(
 				$"*{entry}*",
-				because: "'{0}' does not have a start time and an end time",
+				because: "'{0}' does not have a start time or end time",
 				entry);
 		}
 
@@ -128,33 +128,9 @@ public class SettingsValidationTests
 			// Assert
 			result.Failures.Should().ContainMatch(
 				$"*{entry}*",
-				because: "'{0}' contains an invalid value",
+				because: "'{0}' contains an invalid time value",
 				entry);
 		}
-
-		[Fact]
-		public void Should_fail_when_start_time_after_end_time()
-		{
-			// Arrange
-			Settings settings = new()
-			{
-				Enabled =
-				{
-					Mon = ["15:00-12:00"],
-				}
-			};
-
-			SettingsValidation sut = new();
-
-			// Act
-			var result = sut.Validate(default, settings);
-
-			// Assert
-			result.Failures.Should().ContainMatch(
-				"*15:00-12:00*",
-				because: "'15:00-12:00' start time is not before end time");
-		}
-
 
 		[Fact]
 		public void Should_validate_all_days_of_week()
@@ -164,13 +140,13 @@ public class SettingsValidationTests
 			{
 				Enabled =
 				{
-					Mon = ["Mon"],
-					Tue = ["Tue"],
-					Wed = ["Wed"],
-					Thu = ["Thu"],
-					Fri = ["Fri"],
-					Sat = ["Sat"],
-					Sun = ["Sun"],
+					Mon = ["Invalid schedule Mon"],
+					Tue = ["Invalid schedule Tue"],
+					Wed = ["Invalid schedule Wed"],
+					Thu = ["Invalid schedule Thu"],
+					Fri = ["Invalid schedule Fri"],
+					Sat = ["Invalid schedule Sat"],
+					Sun = ["Invalid schedule Sun"],
 				}
 			};
 
@@ -180,13 +156,13 @@ public class SettingsValidationTests
 			var result = sut.Validate(default, settings);
 
 			// Assert
-			result.Failures.Should().ContainMatch("*Mon*", because: "Mon schedule should be valid");
-			result.Failures.Should().ContainMatch("*Tue*", because: "Tue schedule should be valid");
-			result.Failures.Should().ContainMatch("*Wed*", because: "Wed schedule should be valid");
-			result.Failures.Should().ContainMatch("*Thu*", because: "Thu schedule should be valid");
-			result.Failures.Should().ContainMatch("*Fri*", because: "Fri schedule should be valid");
-			result.Failures.Should().ContainMatch("*Sat*", because: "Sat schedule should be valid");
-			result.Failures.Should().ContainMatch("*Sun*", because: "Sun schedule should be valid");
+			result.Failures.Should().ContainMatch("*Mon*", because: "Schedule for Mon is not valid");
+			result.Failures.Should().ContainMatch("*Tue*", because: "Schedule for Tue is not valid");
+			result.Failures.Should().ContainMatch("*Wed*", because: "Schedule for Wed is not valid");
+			result.Failures.Should().ContainMatch("*Thu*", because: "Schedule for Thu is not valid");
+			result.Failures.Should().ContainMatch("*Fri*", because: "Schedule for Fri is not valid");
+			result.Failures.Should().ContainMatch("*Sat*", because: "Schedule for Sat is not valid");
+			result.Failures.Should().ContainMatch("*Sun*", because: "Schedule for Sun is not valid");
 		}
 	}
 }

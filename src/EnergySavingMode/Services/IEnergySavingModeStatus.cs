@@ -2,5 +2,7 @@ namespace EnergySavingMode.Services;
 
 public interface IEnergySavingModeStatus
 {
-	public string Timestamp { get; }
+	public StatusInfo Current { get; }
 }
+
+public record StatusInfo(bool IsEnabled, DateTime Timestamp);

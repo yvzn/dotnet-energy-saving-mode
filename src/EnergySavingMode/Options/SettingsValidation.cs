@@ -44,17 +44,9 @@ internal class SettingsValidation : IValidateOptions<Settings>
 			}
 		}
 
-		var startTime = TimeSpan.Parse(maybeTimeRange[0], CultureInfo.InvariantCulture);
-		var endTime = TimeSpan.Parse(maybeTimeRange[1], CultureInfo.InvariantCulture);
-
-		if (startTime > endTime)
-		{
-			return $"{entry} has a start time after its end time";
-		}
-
-		return null;
+		return default;
 	}
 
 	private static bool IsValidTime(string maybeTime)
-		=> TimeSpan.TryParse(maybeTime, CultureInfo.InvariantCulture, out _);
+		=> TimeSpan.TryParse(maybeTime, CultureInfo.CurrentCulture, out _);
 }

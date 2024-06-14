@@ -1,13 +1,21 @@
-﻿using EnergySavingMode.Options;
-using Microsoft.Extensions.Options;
-
 namespace EnergySavingMode.Services;
 
-internal class Status : IEnergySavingModeStatus
+internal class Status(Timeline timeline, TimeProvider timeProvider) : IEnergySavingModeStatus
 {
-	public Status(IOptions<Configuration> options)
-	{
-	}
+	public StatusInfo Current => GetCurrentStatus();
 
-	public string Timestamp => DateTimeOffset.UtcNow.ToString("o");
+	private StatusInfo GetCurrentStatus()
+	{
+		var now = timeProvider.GetUtcNow().LocalDateTime;
+		var next = timeline.Next(now);
+
+		if (!next.Any())
+		{
+			return new(false, now);
+		}
+
+		var isEnabled = next.First().Type == TimelineEventType.End;
+		return new(isEnabled, now);
+	}
 }
+
