@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using System.Linq;
 
 namespace EnergySavingMode.Services;
 
@@ -7,33 +6,66 @@ internal class Timeline(IOptions<Options.Configuration> options)
 {
 	private readonly Options.Configuration configuration = options.Value;
 
-	public IEnumerable<TimelineEvent> Next(DateTime dateTime)
+	public IEnumerable<SeriesEvent> GetNextEventSeries(DateTime startingDateTime)
 	{
-		var maxIterations = 50;
-		var dayOfWeek = dateTime.DayOfWeek;
-		var timeOnly = TimeOnly.FromDateTime(dateTime);
+		var dayOfWeek = startingDateTime.DayOfWeek;
+		var startingTime = TimeOnly.FromDateTime(startingDateTime);
 
-		for (var count = 0; count < maxIterations; ++count)
+		var maxDaysToConsider = 30;
+		var daysElapsed = 0;
+
+		var timeRangesOfTheDay = configuration.Schedule[dayOfWeek];
+		foreach (var timeRange in timeRangesOfTheDay)
 		{
-			var timeRangesOfTheDay = configuration.Schedule[dayOfWeek];
-			foreach (var timeRange in timeRangesOfTheDay)
+			if (startingTime <= timeRange.Start)
 			{
-				if (timeOnly <= timeRange.Start)
-				{
-					yield return new(dayOfWeek, timeRange.Start, TimelineEventType.Start);
-				}
-
-				if (timeOnly <= timeRange.End)
-				{
-					yield return new(dayOfWeek, timeRange.End, TimelineEventType.End);
-				}
+				yield return new(dayOfWeek, timeRange.Start, EventType.Start, daysElapsed);
 			}
 
-			dayOfWeek = (DayOfWeek)(((int)dayOfWeek + 1) % 7);
+			if (startingTime <= timeRange.End)
+			{
+				yield return new(dayOfWeek, timeRange.End, EventType.End, daysElapsed);
+			}
+		}
+
+		daysElapsed = 1;
+		dayOfWeek = dayOfWeek.Next();
+
+		for (; daysElapsed < maxDaysToConsider; ++daysElapsed)
+		{
+			timeRangesOfTheDay = configuration.Schedule[dayOfWeek];
+
+			foreach (var timeRange in timeRangesOfTheDay)
+			{
+				yield return new(dayOfWeek, timeRange.Start, EventType.Start, daysElapsed);
+				yield return new(dayOfWeek, timeRange.End, EventType.End, daysElapsed);
+			}
+
+			dayOfWeek = dayOfWeek.Next();
+		}
+	}
+
+	internal IEnumerable<EventOccurence> GetNextEventOccurences(DateTime startingDateTime)
+	{
+		var startingDate = DateOnly.FromDateTime(startingDateTime);
+		foreach (var seriesEvent in GetNextEventSeries(startingDateTime))
+		{
+			var occurenceDate = startingDate.AddDays(seriesEvent.daysElapsed);
+			yield return new(occurenceDate.ToDateTime(seriesEvent.Time, DateTimeKind.Local), seriesEvent.Type);
 		}
 	}
 }
 
-public record TimelineEvent(DayOfWeek Day, TimeOnly Time, TimelineEventType Type);
+internal record SeriesEvent(DayOfWeek Day, TimeOnly Time, EventType Type, int daysElapsed);
 
-public enum TimelineEventType { End = 0, Start = 1 };
+internal record EventOccurence(DateTime DateTime, EventType Type);
+
+internal enum EventType { End = 0, Start = 1 };
+
+internal static class DayOfWeekExtensions
+{
+	public static DayOfWeek Next(this DayOfWeek dayOfWeek)
+	{
+		return (DayOfWeek)(((int)dayOfWeek + 1) % 7);
+	}
+}

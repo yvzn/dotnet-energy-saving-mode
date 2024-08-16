@@ -40,6 +40,7 @@ namespace EnergySavingMode
 		{
 			services.AddScoped<IEnergySavingModeStatus, Status>();
 			services.AddScoped<Timeline>();
+			services.AddScoped<CompactTimeline>();
 			services.AddSingleton(TimeProvider.System);
 
 			return services;
