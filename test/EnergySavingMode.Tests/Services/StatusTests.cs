@@ -1,10 +1,5 @@
 using EnergySavingMode.Services;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Configuration = EnergySavingMode.Options.Configuration;
 using Opts = Microsoft.Extensions.Options.Options;
 
@@ -26,10 +21,10 @@ public class StatusTests
 				}
 			};
 
-			var timeline = new Timeline(Opts.Create(configuration));
+			var timeline = new CompactTimeline(new(Opts.Create(configuration)));
 
-			var dateTime = new DateTime(2024, 6, 10, 11, 30, 0, DateTimeKind.Local);
-			var timeProvider = new FakeTimeProvider(dateTime);
+			var now = new DateTime(2024, 6, 10, 11, 30, 0, DateTimeKind.Local);
+			var timeProvider = new FakeTimeProvider(now);
 
 			Status sut = new(timeline, timeProvider);
 
@@ -38,7 +33,7 @@ public class StatusTests
 
 			// Assert
 			actual.IsEnabled.Should().BeTrue();
-			actual.Timestamp.Should().BeCloseTo(dateTime, TimeSpan.FromSeconds(1));
+			actual.Timestamp.Should().BeCloseTo(now, TimeSpan.FromSeconds(1));
 		}
 
 		[Fact]
@@ -53,10 +48,10 @@ public class StatusTests
 				}
 			};
 
-			var timeline = new Timeline(Opts.Create(configuration));
+			var timeline = new CompactTimeline(new(Opts.Create(configuration)));
 
-			var dateTime = new DateTime(2024, 6, 10, 13, 0, 0, DateTimeKind.Local);
-			var timeProvider = new FakeTimeProvider(dateTime);
+			var now = new DateTime(2024, 6, 10, 13, 0, 0, DateTimeKind.Local);
+			var timeProvider = new FakeTimeProvider(now);
 
 			Status sut = new(timeline, timeProvider);
 
@@ -65,15 +60,21 @@ public class StatusTests
 
 			// Assert
 			actual.IsEnabled.Should().BeFalse();
-			actual.Timestamp.Should().BeCloseTo(dateTime, TimeSpan.FromSeconds(1));
+			actual.Timestamp.Should().BeCloseTo(now, TimeSpan.FromSeconds(1));
 		}
 	}
 }
 
-internal class FakeTimeProvider(DateTime dateTime) : TimeProvider()
+internal class FakeTimeProvider(DateTime startingDateTime) : TimeProvider()
 {
+	private readonly DateTimeOffset mockStartingDateTime = new(startingDateTime);
+
+	private readonly Lazy<DateTimeOffset> actualStartingDateTime = new(() => DateTimeOffset.UtcNow);
+
 	public override DateTimeOffset GetUtcNow()
 	{
-		return new DateTimeOffset(dateTime).ToUniversalTime();
+		var elapsed = DateTimeOffset.UtcNow - actualStartingDateTime.Value;
+		var mockNow = mockStartingDateTime.Add(elapsed);
+		return mockNow.ToUniversalTime();
 	}
 }

@@ -18,4 +18,3 @@ internal class Status(CompactTimeline timeline, TimeProvider timeProvider) : IEn
 		return new(isEnabled, now);
 	}
 }
-

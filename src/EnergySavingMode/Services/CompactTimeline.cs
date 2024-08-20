@@ -4,8 +4,6 @@ namespace EnergySavingMode.Services;
 
 internal class CompactTimeline(Timeline timeline)
 {
-	private readonly Timeline timeline = timeline;
-
 	public IEnumerable<EventOccurence> GetNextEvents(DateTime startingDateTime)
 	{
 		EventOccurence? previous = default;
