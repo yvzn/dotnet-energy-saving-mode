@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 
 namespace EnergySavingMode.Services;
 
-internal class Timeline(IOptions<Options.Configuration> options)
+internal class Timeline(IOptions<Options.Configuration> options): ITimeline
 {
 	private readonly Options.Configuration configuration = options.Value;
 
@@ -17,12 +17,12 @@ internal class Timeline(IOptions<Options.Configuration> options)
 		var timeRangesOfTheDay = configuration.Schedule[dayOfWeek];
 		foreach (var timeRange in timeRangesOfTheDay)
 		{
-			if (startingTime <= timeRange.Start)
+			if (startingTime.IsBefore(timeRange.Start))
 			{
 				yield return new(dayOfWeek, timeRange.Start, EventType.Start, daysElapsed);
 			}
 
-			if (startingTime <= timeRange.End)
+			if (startingTime.IsBefore(timeRange.End))
 			{
 				yield return new(dayOfWeek, timeRange.End, EventType.End, daysElapsed);
 			}
@@ -45,7 +45,7 @@ internal class Timeline(IOptions<Options.Configuration> options)
 		}
 	}
 
-	internal IEnumerable<EventOccurence> GetNextEventOccurences(DateTime startingDateTime)
+	public IEnumerable<EventOccurence> GetNextEventOccurences(DateTime startingDateTime)
 	{
 		var startingDate = DateOnly.FromDateTime(startingDateTime);
 		foreach (var seriesEvent in GetNextEventSeries(startingDateTime))

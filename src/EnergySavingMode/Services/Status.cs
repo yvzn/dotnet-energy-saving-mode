@@ -7,7 +7,7 @@ internal class Status(CompactTimeline timeline, TimeProvider timeProvider) : IEn
 	private StatusInfo GetCurrentStatus()
 	{
 		var now = timeProvider.GetUtcNow().LocalDateTime;
-		var next = timeline.GetNextEvents(now);
+		var next = timeline.GetNextEventOccurences(now);
 
 		if (!next.Any())
 		{

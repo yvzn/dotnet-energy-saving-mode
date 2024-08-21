@@ -2,7 +2,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace EnergySavingMode.Services;
 
-internal class EventTrigger(CompactTimeline timeline, TimeProvider timeProvider) : BackgroundService, IEnergySavingModeEvents
+internal class EventTrigger(ITimeline timeline, TimeProvider timeProvider) : BackgroundService, IEnergySavingModeEvents
 {
     public event EventHandler? Enabled;
     public event EventHandler? Disabled;
@@ -12,12 +12,13 @@ internal class EventTrigger(CompactTimeline timeline, TimeProvider timeProvider)
         await Task.Yield();
 
         var now = timeProvider.GetUtcNow().LocalDateTime;
-        var nextEvent = timeline.GetNextEvents(now).FirstOrDefault();
+        var nextEvent = timeline.GetNextEventOccurences(now).FirstOrDefault();
 
         if (nextEvent is null)
         {
             return;
         }
+Console.WriteLine($"next: {nextEvent.DateTime:dd/MM:HH:mm:ss:fff} type: {nextEvent.Type}");
 
         var isEnergySavingModeEnabled = nextEvent.Type == EventType.End;
         if (isEnergySavingModeEnabled)
@@ -34,18 +35,22 @@ internal class EventTrigger(CompactTimeline timeline, TimeProvider timeProvider)
 
         while (nextEvent is not null && !isStopping)
         {
+            now = timeProvider.GetUtcNow().LocalDateTime;
+
             if (nextEvent.DateTime > now) {
+Console.WriteLine($"wait: {nextEvent.DateTime:dd/MM:HH:mm:ss:fff} for: {(nextEvent.DateTime - now).TotalMilliseconds} ms");
                 using var periodicTimer = new PeriodicTimer(nextEvent.DateTime - now);
                 await periodicTimer.WaitForNextTickAsync(stoppingToken);
             }
             
             now = timeProvider.GetUtcNow().LocalDateTime;
-            nextEvent = timeline.GetNextEvents(now).FirstOrDefault();
+            nextEvent = timeline.GetNextEventOccurences(now).FirstOrDefault();
 
             if (nextEvent is null)
             {
                 continue;
             }
+Console.WriteLine($"next: {nextEvent.DateTime:dd/MM:HH:mm:ss:fff} type: {nextEvent.Type}");
 
             isEnergySavingModeEnabled = nextEvent.Type == EventType.End;
             if (isEnergySavingModeEnabled)

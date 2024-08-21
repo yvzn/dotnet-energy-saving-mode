@@ -7,7 +7,7 @@ namespace EnergySavingMode.Tests.Services;
 
 public class CompactTimelineTests
 {
-	public class GetNextEvents
+	public class GetNextEventOccurences
 	{
 		[Fact]
 		public void Should_return_next_event_in_sequence()
@@ -26,7 +26,7 @@ public class CompactTimelineTests
 			var dateTime = new DateTime(2024, 6, 10, 14, 0, 0, DateTimeKind.Local);
 
 			// Act
-			var result = sut.GetNextEvents(dateTime);
+			var result = sut.GetNextEventOccurences(dateTime);
 
 			// Assert
 			result.FirstOrDefault().Should().Be(new EventOccurence(new(2024, 6, 10, 15, 0, 0, DateTimeKind.Local), EventType.End));
@@ -49,7 +49,7 @@ public class CompactTimelineTests
 			var dateTime = new DateTime(2024, 6, 10, 14, 0, 0, DateTimeKind.Local);
 
 			// Act
-			var result = sut.GetNextEvents(dateTime);
+			var result = sut.GetNextEventOccurences(dateTime);
 
 			// Assert
 			result.FirstOrDefault().Should().Be(new EventOccurence(new(2024, 6, 10, 16, 0, 0, DateTimeKind.Local), EventType.End));
@@ -73,7 +73,7 @@ public class CompactTimelineTests
 			var dateTime = new DateTime(2024, 6, 10, 14, 0, 0, DateTimeKind.Local);
 
 			// Act
-			var result = sut.GetNextEvents(dateTime);
+			var result = sut.GetNextEventOccurences(dateTime);
 
 			// Assert
 			result.FirstOrDefault().Should().Be(new EventOccurence(new(2024, 6, 11, 15, 0, 0, DateTimeKind.Local), EventType.End));
@@ -98,7 +98,7 @@ public class CompactTimelineTests
 			var dateTime = new DateTime(2024, 6, 10, 14, 0, 0, DateTimeKind.Local);
 
 			// Act
-			var result = sut.GetNextEvents(dateTime);
+			var result = sut.GetNextEventOccurences(dateTime);
 
 			// Assert
 			result.FirstOrDefault().Should().Be(new EventOccurence(new(2024, 6, 12, 15, 0, 0, DateTimeKind.Local), EventType.End));
@@ -127,7 +127,7 @@ public class CompactTimelineTests
 			var dateTime = new DateTime(2024, 6, 10, 12, 0, 0, DateTimeKind.Local);
 
 			// Act
-			var result = sut.GetNextEvents(dateTime);
+			var result = sut.GetNextEventOccurences(dateTime);
 
 			// Assert
 			result.Should().BeEmpty();

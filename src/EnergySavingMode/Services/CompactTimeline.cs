@@ -2,9 +2,9 @@ using System.Diagnostics;
 
 namespace EnergySavingMode.Services;
 
-internal class CompactTimeline(Timeline timeline)
+internal class CompactTimeline(Timeline timeline): ITimeline
 {
-	public IEnumerable<EventOccurence> GetNextEvents(DateTime startingDateTime)
+	public IEnumerable<EventOccurence> GetNextEventOccurences(DateTime startingDateTime)
 	{
 		EventOccurence? previous = default;
 

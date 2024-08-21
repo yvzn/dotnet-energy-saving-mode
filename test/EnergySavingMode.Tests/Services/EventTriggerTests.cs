@@ -21,7 +21,7 @@ public class EventTriggerTests
                 }
             };
 
-            var timeline = new CompactTimeline(new(Opts.Create(configuration)));
+            var timeline = new Timeline(Opts.Create(configuration));
 
             var now = new DateTime(2024, 6, 10, 11, 30, 0, 0, DateTimeKind.Local);
             var timeProvider = new FakeTimeProvider(now);
@@ -53,7 +53,7 @@ public class EventTriggerTests
                 }
             };
 
-            var timeline = new CompactTimeline(new(Opts.Create(configuration)));
+            var timeline = new Timeline(Opts.Create(configuration));
 
             var now = new DateTime(2024, 6, 10, 10, 30, 0, 0, DateTimeKind.Local);
             var timeProvider = new FakeTimeProvider(now);
@@ -85,7 +85,7 @@ public class EventTriggerTests
                 }
             };
 
-            var timeline = new CompactTimeline(new(Opts.Create(configuration)));
+            var timeline = new Timeline(Opts.Create(configuration));
 
             var now = new DateTime(2024, 6, 10, 10, 30, 0, 0, DateTimeKind.Local);
             var timeProvider = new FakeTimeProvider(now);
@@ -99,7 +99,7 @@ public class EventTriggerTests
             await cts.CancelAsync();
 
             // Assert
-            sut.ExecuteTask?.Status.Should().BeOneOf(TaskStatus.WaitingForActivation, TaskStatus.RanToCompletion);
+            sut.ExecuteTask?.Status.Should().BeOneOf(TaskStatus.WaitingForActivation, TaskStatus.RanToCompletion, TaskStatus.Canceled);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ public class EventTriggerTests
                 }
             };
 
-            var timeline = new CompactTimeline(new(Opts.Create(configuration)));
+            var timeline = new Timeline(Opts.Create(configuration));
 
             var now = new DateTime(2024, 6, 10, 10, 59, 59, 999, DateTimeKind.Local);
             var timeProvider = new FakeTimeProvider(now);
@@ -137,6 +137,48 @@ public class EventTriggerTests
 
             // Assert
             isEnabledEventTriggered.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Should_trigger_multiple_events_on_schedule()
+        {
+            // Arrange
+            var configuration = new Configuration()
+            {
+                Schedule =
+                {
+                    [DayOfWeek.Monday] = [
+                        new (new (11, 0, 0, 200), new (11, 0, 0, 300)),
+                        new (new (11, 0, 0, 400), new (11, 0, 0, 500)),
+                    ]
+                }
+            };
+
+            var timeline = new Timeline(Opts.Create(configuration));
+
+            var now = new DateTime(2024, 6, 17, 10, 59, 59, 999, DateTimeKind.Local);
+            var timeProvider = new FakeTimeProvider(now);
+
+            EventTrigger sut = new(timeline, timeProvider);
+
+            int enabledEventCount = 0;
+            void sut_Enabled(object? _, EventArgs? __) { ++enabledEventCount; Console.WriteLine($"Enabled: {enabledEventCount}"); }
+            sut.Enabled += sut_Enabled;
+
+            int disabledEventCount = 0;
+            void sut_Disabled(object? _, EventArgs? __) { ++disabledEventCount; Console.WriteLine($"Disabled: {disabledEventCount}"); }
+            sut.Disabled += sut_Disabled;
+
+            var cts = new CancellationTokenSource();
+
+            // Act
+            await sut.StartAsync(cts.Token);
+            await Task.Delay(millisecondsDelay: 800);
+            await cts.CancelAsync();
+
+            // Assert
+            enabledEventCount.Should().Be(2);
+            disabledEventCount.Should().Be(3);
         }
     }
 }

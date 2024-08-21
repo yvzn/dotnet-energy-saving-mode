@@ -73,7 +73,7 @@ public class TimelineTests
 
 			Timeline sut = new(Opts.Create(configuration));
 
-			var dateTime = new DateTime(2024, 6, 10, 12, 0, 0, DateTimeKind.Local);
+			var dateTime = new DateTime(2024, 6, 10, 11, 0, 0, DateTimeKind.Local);
 
 			// Act
 			var result = sut.GetNextEventSeries(dateTime);
@@ -102,7 +102,7 @@ public class TimelineTests
 
 			Timeline sut = new(Opts.Create(configuration));
 
-			var dateTime = new DateTime(2024, 6, 10, 12, 0, 0, DateTimeKind.Local);
+			var dateTime = new DateTime(2024, 6, 10, 11, 0, 0, DateTimeKind.Local);
 
 			// Act
 			var result = sut.GetNextEventSeries(dateTime);
@@ -130,7 +130,7 @@ public class TimelineTests
 
 			Timeline sut = new(Opts.Create(configuration));
 
-			var dateTime = new DateTime(2024, 6, 10, 12, 0, 0, DateTimeKind.Local);
+			var dateTime = new DateTime(2024, 6, 10, 11, 0, 0, DateTimeKind.Local);
 
 			// Act
 			var result = sut.GetNextEventSeries(dateTime);
@@ -179,7 +179,7 @@ public class TimelineTests
 
 			Timeline sut = new(Opts.Create(configuration));
 
-			var dateTime = new DateTime(2024, 6, 10, 12, 0, 0, DateTimeKind.Local);
+			var dateTime = new DateTime(2024, 6, 10, 11, 0, 0, DateTimeKind.Local);
 
 			// Act
 			var result = sut.GetNextEventOccurences(dateTime);
@@ -209,7 +209,7 @@ public class TimelineTests
 
 			Timeline sut = new(Opts.Create(configuration));
 
-			var dateTime = new DateTime(2024, 6, 10, 12, 0, 0, DateTimeKind.Local);
+			var dateTime = new DateTime(2024, 6, 10, 11, 0, 0, DateTimeKind.Local);
 
 			// Act
 			var result = sut.GetNextEventOccurences(dateTime);
