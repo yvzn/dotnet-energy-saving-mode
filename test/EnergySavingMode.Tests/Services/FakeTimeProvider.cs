@@ -10,7 +10,7 @@ internal class FakeTimeProvider(DateTime startingDateTime) : TimeProvider()
 	{
 		var elapsed = DateTimeOffset.UtcNow - actualStartingDateTime.Value;
 		var mockNow = mockStartingDateTime.Add(elapsed);
-Console.WriteLine($"now: {mockNow:dd/MM:HH:mm:ss:fff}");
+
 		return mockNow.ToUniversalTime();
 	}
 }

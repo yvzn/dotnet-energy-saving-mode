@@ -1,6 +1,14 @@
 # Energy Saving Mode for ASP.NET
 
+TODO Description
+
+## Installation
+
+TODO
+
 ## Configuration
+
+The time ranges and dates are expressed in the **local timezone of the server**.
 
 ```jsonc
 // appsettings.json
@@ -17,8 +25,7 @@
 }
 ```
 
-
-## Background Service
+## Registering the EnergySavingMode service
 
 ```csharp
 // Program.cs
@@ -29,19 +36,12 @@ builder.Services.AddEnergySavingMode(
 ## Usage
 
 ```csharp
+public class MyComponent(IEnergySavingModeEvents energySavingMode) {
+	// ...
 
-this.EnergySavingMode.Enabled += MyEventHandler
+	energySavingMode.Enabled += MyEventHandler;
+	energySavingMode.Disabled += MyEventHandler;
 
-this.EnergySavingMode.Disabled += MyEventHandler
-
+	// ...
+}
 ```
-
-## Possible Implementation
-
-Detect the next event in the calendar
-
-Make sure the next next event is not immediatly contiguous
-
-Use timer to trigger event handlers
-
-Repeat

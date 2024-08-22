@@ -39,10 +39,12 @@ namespace EnergySavingMode
 			this IServiceCollection services)
 		{
 			services.AddScoped<IEnergySavingModeStatus, Status>();
-			services.AddScoped<IEnergySavingModeEvents, EventTrigger>();
-			services.AddScoped<Timeline>();
-			services.AddScoped<ITimeline, CompactTimeline>();
+			services.AddSingleton<EventTrigger>();
+			services.AddSingleton<Timeline>();
+			services.AddSingleton<ITimeline, CompactTimeline>();
 			services.AddSingleton(TimeProvider.System);
+
+			services.AddHostedService<EventTrigger>();
 
 			return services;
 		}

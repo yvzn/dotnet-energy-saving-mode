@@ -1,12 +1,12 @@
 namespace EnergySavingMode.Services;
 
-internal class Status(CompactTimeline timeline, TimeProvider timeProvider) : IEnergySavingModeStatus
+internal class Status(ITimeline timeline, TimeProvider timeProvider) : IEnergySavingModeStatus
 {
 	public StatusInfo Current => GetCurrentStatus();
 
 	private StatusInfo GetCurrentStatus()
 	{
-		var now = timeProvider.GetUtcNow().LocalDateTime;
+		var now = timeProvider.GetLocalNow().LocalDateTime;
 		var next = timeline.GetNextEventOccurences(now);
 
 		if (!next.Any())
