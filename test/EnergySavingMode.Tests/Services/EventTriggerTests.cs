@@ -27,10 +27,10 @@ public class EventTriggerTests
 			var timeProvider = new FakeTimeProvider(now);
 
 			var isEnabledEventTriggered = false;
-			Task OnEnabled() => Task.FromResult(isEnabledEventTriggered = true);
+			Task OnEnabledCallback() => Task.FromResult(isEnabledEventTriggered = true);
 
 			var eventBroadcast = new EventBroadcast();
-			eventBroadcast.OnEnabled(OnEnabled);
+			eventBroadcast.OnEnabled(OnEnabledCallback);
 
 			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
@@ -60,10 +60,10 @@ public class EventTriggerTests
 			var timeProvider = new FakeTimeProvider(now);
 
 			var isDisabledEventTriggered = false;
-			Task OnDisabled() => Task.FromResult(isDisabledEventTriggered = true);
+			Task OnDisabledCallback() => Task.FromResult(isDisabledEventTriggered = true);
 
 			var eventBroadcast = new EventBroadcast();
-			eventBroadcast.OnDisabled(OnDisabled);
+			eventBroadcast.OnDisabled(OnDisabledCallback);
 
 			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
@@ -124,10 +124,10 @@ public class EventTriggerTests
 			var timeProvider = new FakeTimeProvider(now);
 
 			var isEnabledEventTriggered = false;
-			Task OnEnabled() => Task.FromResult(isEnabledEventTriggered = true);
+			Task OnEnabledCallback() => Task.FromResult(isEnabledEventTriggered = true);
 
 			var eventBroadcast = new EventBroadcast();
-			eventBroadcast.OnEnabled(OnEnabled);
+			eventBroadcast.OnEnabled(OnEnabledCallback);
 
 			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
@@ -163,14 +163,14 @@ public class EventTriggerTests
 			var timeProvider = new FakeTimeProvider(now);
 
 			int enabledEventCount = 0;
-			Task OnEnabled() => Task.FromResult(++enabledEventCount);
+			Task OnEnabledCallback() => Task.FromResult(++enabledEventCount);
 
 			int disabledEventCount = 0;
-			Task OnDisabled() => Task.FromResult(++disabledEventCount);
+			Task OnDisabledCallback() => Task.FromResult(++disabledEventCount);
 
 			var eventBroadcast = new EventBroadcast();
-			eventBroadcast.OnEnabled(OnEnabled);
-			eventBroadcast.OnDisabled(OnDisabled);
+			eventBroadcast.OnEnabled(OnEnabledCallback);
+			eventBroadcast.OnDisabled(OnDisabledCallback);
 
 			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 

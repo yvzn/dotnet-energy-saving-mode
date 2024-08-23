@@ -39,9 +39,19 @@ builder.Services.AddEnergySavingMode(
 public class MyComponent(IEnergySavingModeEvents energySavingMode) {
 	// ...
 
-	energySavingMode.Enabled += MyEventHandler;
-	energySavingMode.Disabled += MyEventHandler;
+	public void MyStartupCode() {
+		energySavingMode.OnEnabled(EnergySavingMode_Enabled);
+		energySavingMode.OnDisabled(EnergySavingMode_Disabled);
+	}
+	
+	private Task EnergySavingMode_Enabled()
+	{
+		// ...
+	}
 
-	// ...
+	private Task EnergySavingMode_Disabled()
+	{
+		// ...
+	}
 }
 ```
