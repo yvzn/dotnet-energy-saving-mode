@@ -1,0 +1,18 @@
+{
+	"configurations": [
+		{
+			"name": "C#: SampleWebAPI",
+			"type": "dotnet",
+			"request": "launch",
+			"projectPath": "${workspaceFolder}/sample/SampleWebAPI/SampleWebAPI.csproj",
+			"launchConfigurationId": "TargetFramework=;default"
+		},
+		{
+			"name": "C#: EnergySavingMode.Tests",
+			"type": "dotnet",
+			"request": "launch",
+			"projectPath": "${workspaceFolder}/test/EnergySavingMode.Tests/EnergySavingMode.Tests.csproj",
+			"launchConfigurationId": "TargetFramework=;EnergySavingMode.Tests"
+		}
+	]
+}

@@ -7,178 +7,183 @@ namespace EnergySavingMode.Tests.Services;
 
 public class EventTriggerTests
 {
-    public class ExecuteAsync
-    {
-        [Fact]
-        public async Task Should_trigger_enabled_event_on_startup()
-        {
-            // Arrange
-            var configuration = new Configuration()
-            {
-                Schedule =
-                {
-                    [DayOfWeek.Monday] = [new (new (11, 0), new (12, 0))]
-                }
-            };
+	public class ExecuteAsync
+	{
+		[Fact]
+		public async Task Should_trigger_enabled_event_on_startup()
+		{
+			// Arrange
+			var configuration = new Configuration()
+			{
+				Schedule =
+				{
+					[DayOfWeek.Monday] = [new (new (11, 0), new (12, 0))]
+				}
+			};
 
-            var timeline = new Timeline(Opts.Create(configuration));
+			var timeline = new Timeline(Opts.Create(configuration));
 
-            var now = new DateTime(2024, 6, 10, 11, 30, 0, 0, DateTimeKind.Local);
-            var timeProvider = new FakeTimeProvider(now);
+			var now = new DateTime(2024, 6, 10, 11, 30, 0, 0, DateTimeKind.Local);
+			var timeProvider = new FakeTimeProvider(now);
 
-            EventTrigger sut = new(timeline, timeProvider);
+			var isEnabledEventTriggered = false;
+			Task OnEnabled() => Task.FromResult(isEnabledEventTriggered = true);
 
-            var isEnabledEventTriggered = false;
-            void sut_Enabled(object? _, EventArgs? __) { isEnabledEventTriggered = true; }
+			var eventBroadcast = new EventBroadcast();
+			eventBroadcast.OnEnabled(OnEnabled);
 
-            sut.Enabled += sut_Enabled;
+			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
-            // Act
-            await sut.StartAsync(CancellationToken.None);
-            await sut.StopAsync(CancellationToken.None);
+			// Act
+			await sut.StartAsync(CancellationToken.None);
+			await sut.StopAsync(CancellationToken.None);
 
-            // Assert
-            isEnabledEventTriggered.Should().BeTrue();
-        }
+			// Assert
+			isEnabledEventTriggered.Should().BeTrue();
+		}
 
-        [Fact]
-        public async Task Should_trigger_disabled_event_on_startup()
-        {
-            // Arrange
-            var configuration = new Configuration()
-            {
-                Schedule =
-                {
-                    [DayOfWeek.Monday] = [new (new (11, 0), new (12, 0))]
-                }
-            };
+		[Fact]
+		public async Task Should_trigger_disabled_event_on_startup()
+		{
+			// Arrange
+			var configuration = new Configuration()
+			{
+				Schedule =
+				{
+					[DayOfWeek.Monday] = [new (new (11, 0), new (12, 0))]
+				}
+			};
 
-            var timeline = new Timeline(Opts.Create(configuration));
+			var timeline = new Timeline(Opts.Create(configuration));
 
-            var now = new DateTime(2024, 6, 10, 10, 30, 0, 0, DateTimeKind.Local);
-            var timeProvider = new FakeTimeProvider(now);
+			var now = new DateTime(2024, 6, 10, 10, 30, 0, 0, DateTimeKind.Local);
+			var timeProvider = new FakeTimeProvider(now);
 
-            EventTrigger sut = new(timeline, timeProvider);
+			var isDisabledEventTriggered = false;
+			Task OnDisabled() => Task.FromResult(isDisabledEventTriggered = true);
 
-            var isDisabledEventTriggered = false;
-            void sut_Disabled(object? _, EventArgs? __) { isDisabledEventTriggered = true; }
+			var eventBroadcast = new EventBroadcast();
+			eventBroadcast.OnDisabled(OnDisabled);
 
-            sut.Disabled += sut_Disabled;
+			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
-            // Act
-            await sut.StartAsync(CancellationToken.None);
-            await sut.StopAsync(CancellationToken.None);
+			// Act
+			await sut.StartAsync(CancellationToken.None);
+			await sut.StopAsync(CancellationToken.None);
 
-            // Assert
-            isDisabledEventTriggered.Should().BeTrue();
-        }
+			// Assert
+			isDisabledEventTriggered.Should().BeTrue();
+		}
 
-        [Fact]
-        public async Task Should_stop_when_shutdown()
-        {
-            // Arrange
-            var configuration = new Configuration()
-            {
-                Schedule =
-                {
-                    [DayOfWeek.Monday] = [new (new (11, 0), new (12, 0))]
-                }
-            };
+		[Fact]
+		public async Task Should_stop_when_shutdown()
+		{
+			// Arrange
+			var configuration = new Configuration()
+			{
+				Schedule =
+				{
+					[DayOfWeek.Monday] = [new (new (11, 0), new (12, 0))]
+				}
+			};
 
-            var timeline = new Timeline(Opts.Create(configuration));
+			var timeline = new Timeline(Opts.Create(configuration));
 
-            var now = new DateTime(2024, 6, 10, 10, 30, 0, 0, DateTimeKind.Local);
-            var timeProvider = new FakeTimeProvider(now);
+			var now = new DateTime(2024, 6, 10, 10, 30, 0, 0, DateTimeKind.Local);
+			var timeProvider = new FakeTimeProvider(now);
 
-            EventTrigger sut = new(timeline, timeProvider);
+			var eventBroadcast = new EventBroadcast();
 
-            var cts = new CancellationTokenSource();
+			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
-            // Act
-            await sut.StartAsync(cts.Token);
-            await cts.CancelAsync();
+			var cts = new CancellationTokenSource();
 
-            // Assert
-            sut.ExecuteTask?.Status.Should().BeOneOf(TaskStatus.WaitingForActivation, TaskStatus.RanToCompletion, TaskStatus.Canceled);
-        }
+			// Act
+			await sut.StartAsync(cts.Token);
+			await cts.CancelAsync();
 
-        [Fact]
-        public async Task Should_trigger_enabled_event_on_schedule()
-        {
-            // Arrange
-            var configuration = new Configuration()
-            {
-                Schedule =
-                {
-                    [DayOfWeek.Monday] = [new (new (11, 0), new (12, 0))]
-                }
-            };
+			// Assert
+			sut.ExecuteTask?.Status.Should().BeOneOf(TaskStatus.WaitingForActivation, TaskStatus.RanToCompletion, TaskStatus.Canceled);
+		}
 
-            var timeline = new Timeline(Opts.Create(configuration));
+		[Fact]
+		public async Task Should_trigger_enabled_event_on_schedule()
+		{
+			// Arrange
+			var configuration = new Configuration()
+			{
+				Schedule =
+				{
+					[DayOfWeek.Monday] = [new (new (11, 0), new (12, 0))]
+				}
+			};
 
-            var now = new DateTime(2024, 6, 10, 10, 59, 59, 999, DateTimeKind.Local);
-            var timeProvider = new FakeTimeProvider(now);
+			var timeline = new Timeline(Opts.Create(configuration));
 
-            EventTrigger sut = new(timeline, timeProvider);
+			var now = new DateTime(2024, 6, 10, 10, 59, 59, 999, DateTimeKind.Local);
+			var timeProvider = new FakeTimeProvider(now);
 
-            var isEnabledEventTriggered = false;
-            void sut_Enabled(object? _, EventArgs? __) { 
-                isEnabledEventTriggered = true; 
-            }
+			var isEnabledEventTriggered = false;
+			Task OnEnabled() => Task.FromResult(isEnabledEventTriggered = true);
 
-            sut.Enabled += sut_Enabled;
+			var eventBroadcast = new EventBroadcast();
+			eventBroadcast.OnEnabled(OnEnabled);
 
-            var cts = new CancellationTokenSource();
+			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
-            // Act
-            await sut.StartAsync(cts.Token);
-            await Task.Delay(millisecondsDelay: 100);
-            await cts.CancelAsync();
+			var cts = new CancellationTokenSource();
 
-            // Assert
-            isEnabledEventTriggered.Should().BeTrue();
-        }
+			// Act
+			await sut.StartAsync(cts.Token);
+			await Task.Delay(millisecondsDelay: 100);
+			await cts.CancelAsync();
 
-        [Fact]
-        public async Task Should_trigger_multiple_events_on_schedule()
-        {
-            // Arrange
-            var configuration = new Configuration()
-            {
-                Schedule =
-                {
-                    [DayOfWeek.Monday] = [
-                        new (new (11, 0, 0, 200), new (11, 0, 0, 300)),
-                        new (new (11, 0, 0, 400), new (11, 0, 0, 500)),
-                    ]
-                }
-            };
+			// Assert
+			isEnabledEventTriggered.Should().BeTrue();
+		}
 
-            var timeline = new Timeline(Opts.Create(configuration));
+		[Fact]
+		public async Task Should_trigger_multiple_events_on_schedule()
+		{
+			// Arrange
+			var configuration = new Configuration()
+			{
+				Schedule =
+				{
+					[DayOfWeek.Monday] = [
+						new (new (11, 0, 0, 200), new (11, 0, 0, 300)),
+						new (new (11, 0, 0, 400), new (11, 0, 0, 500)),
+					]
+				}
+			};
 
-            var now = new DateTime(2024, 6, 17, 10, 59, 59, 999, DateTimeKind.Local);
-            var timeProvider = new FakeTimeProvider(now);
+			var timeline = new Timeline(Opts.Create(configuration));
 
-            EventTrigger sut = new(timeline, timeProvider);
+			var now = new DateTime(2024, 6, 17, 10, 59, 59, 999, DateTimeKind.Local);
+			var timeProvider = new FakeTimeProvider(now);
 
-            int enabledEventCount = 0;
-            void sut_Enabled(object? _, EventArgs? __) { ++enabledEventCount; Console.WriteLine($"Enabled: {enabledEventCount}"); }
-            sut.Enabled += sut_Enabled;
+			int enabledEventCount = 0;
+			Task OnEnabled() => Task.FromResult(++enabledEventCount);
 
-            int disabledEventCount = 0;
-            void sut_Disabled(object? _, EventArgs? __) { ++disabledEventCount; Console.WriteLine($"Disabled: {disabledEventCount}"); }
-            sut.Disabled += sut_Disabled;
+			int disabledEventCount = 0;
+			Task OnDisabled() => Task.FromResult(++disabledEventCount);
 
-            var cts = new CancellationTokenSource();
+			var eventBroadcast = new EventBroadcast();
+			eventBroadcast.OnEnabled(OnEnabled);
+			eventBroadcast.OnDisabled(OnDisabled);
 
-            // Act
-            await sut.StartAsync(cts.Token);
-            await Task.Delay(millisecondsDelay: 800);
-            await cts.CancelAsync();
+			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
-            // Assert
-            enabledEventCount.Should().Be(2);
-            disabledEventCount.Should().Be(3);
-        }
-    }
+			var cts = new CancellationTokenSource();
+
+			// Act
+			await sut.StartAsync(cts.Token);
+			await Task.Delay(millisecondsDelay: 800);
+			await cts.CancelAsync();
+
+			// Assert
+			enabledEventCount.Should().Be(2);
+			disabledEventCount.Should().Be(3);
+		}
+	}
 }

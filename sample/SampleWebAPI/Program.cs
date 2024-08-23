@@ -24,30 +24,30 @@ app.MapGet("/", (IEnergySavingModeStatus energySavingModeStatus) =>
 
 app.Run();
 
-internal class EnergySavingModeEventHandler(IEnergySavingModeEvents energySavingMode, ILogger<EnergySavingModeEventHandler> logger) : BackgroundService
+
+
+
+internal class EnergySavingModeEventHandler(
+	IEnergySavingModeEvents energySavingMode,
+	ILogger<EnergySavingModeEventHandler> logger) : BackgroundService
 {
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		await Task.Yield();
 
-		energySavingMode.Enabled += EnergySavingMode_Enabled;
-		energySavingMode.Disabled += EnergySavingMode_Disabled;
-
-		while (!stoppingToken.IsCancellationRequested) {
-			await Task.Delay(1_000, stoppingToken);
-		}
-
-		energySavingMode.Enabled -= EnergySavingMode_Enabled;
-		energySavingMode.Disabled -= EnergySavingMode_Disabled;
+		energySavingMode.OnEnabled(EnergySavingMode_Enabled);
+		energySavingMode.OnDisabled(EnergySavingMode_Disabled);
 	}
 
-	private void EnergySavingMode_Enabled(object? sender, EventArgs e)
+	private Task EnergySavingMode_Enabled()
 	{
-		Console.WriteLine("Energy Saving Mode is Enabled...");
+		logger.LogInformation("Energy Saving Mode is Enabled...");
+		return Task.CompletedTask;
 	}
 
-	private void EnergySavingMode_Disabled(object? sender, EventArgs e)
+	private Task EnergySavingMode_Disabled()
 	{
-		Console.WriteLine("Energy Saving Mode is Disabled...");
+		logger.LogInformation("Energy Saving Mode is Disabled...");
+		return Task.CompletedTask;
 	}
 }
