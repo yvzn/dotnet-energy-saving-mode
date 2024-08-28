@@ -28,12 +28,13 @@ jobs:
       arguments: '--no-build --no-restore'
   - task: DotNetCoreCLI@2
     inputs:
-        command: pack
-        arguments: '--no-build --no-restore --output $(Build.ArtifactStagingDirectory)'
-        versioningScheme: byPrereleaseNumber
-        majorVersion: '$(Major)'
-        minorVersion: '$(Minor)'
-        patchVersion: '$(Patch)'
+      command: 'pack'
+      packagesToPack: 'src/EnergySavingMode/*.csproj'
+      nobuild: true
+      versioningScheme: 'byPrereleaseNumber'
+      majorVersion: '$(Major)'
+      minorVersion: '$(Minor)'
+      patchVersion: '$(Patch)'
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
