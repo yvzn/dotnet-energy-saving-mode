@@ -21,15 +21,17 @@ jobs:
     inputs:
       command: 'build'
       projects: '*.sln'
+      arguments: '--configuration Release'
   - task: DotNetCoreCLI@2
     inputs:
       command: 'test'
       projects: '*.sln'
-      arguments: '--no-build --no-restore'
+      arguments: '--configuration Release --no-build --no-restore'
   - task: DotNetCoreCLI@2
     inputs:
       command: 'pack'
       packagesToPack: 'src/EnergySavingMode/*.csproj'
+      nobuild: true
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: '$(Major)'
       minorVersion: '$(Minor)'

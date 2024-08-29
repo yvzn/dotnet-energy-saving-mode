@@ -4,6 +4,17 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors></TreatWarningsAsErrors>
+		<IsPackable>true</IsPackable>
+
+		<!-- NuGet -->
+		<PackageId>EnergySavingMode</PackageId>
+		<Authors>Yvan Razafindramanana</Authors>
+		<Description>Energy Saving Mode for ASP.NET: Automatically pause parts of application outside business hours and optimise for costs (FinOps) and efficiency (GreenOps)</Description>
+		<Copyright>Copyright 2024 Yvan Razafindramanana</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/yvzn/dotnet-energy-saving-mode</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,5 +26,9 @@
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>$(AssemblyName).Tests</_Parameter1>
 		</AssemblyAttribute>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="../../README.md" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 </Project>
