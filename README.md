@@ -5,23 +5,33 @@ and optimise for cloud costs (FinOps) and efficiency (GreenOps)
 
 ## Description
 
-To reduce cloud costs or carbon footprint of an application, an option is to reduce
+An option to reduce cloud costs or carbon footprint of an application, is to reduce
 its energy usage outside operating hours. For instance: reduce compute and storage
 requirements at night and during weekends.
 
-The simplest way to achieve this goal is to shut down entire applications and
-underlying services.
+One way to achieve this, is to shut down the entire application and underlying services
+when they are not in use.
 
-This is not always feasible.
+But this is not always feasible.
 
-The alternative proposed by _Energy Saving Mode for ASP.NET_ is to programmatically
-pause the most impactful services or components on a desired schedule:
+_Energy Saving Mode for ASP.NET_ proposes to programmatically
+pause selected services or components on a desired schedule:
 
-1. define a weekly schedule of when application should be in Energy Saving Mode
-2. listen to events when Energy Saving Mode is enabled or disabled — and act act accordingly
-3. or check the Energy Saving Mode status before running intensive tasks
+1. define a weekly schedule of when Energy Saving Mode should be enabled
+2. react accordingly when Energy Saving Mode changes
+3. check the Energy Saving Mode status before running intensive tasks
 
-More example scenarios described below.
+## Example scenarios
+
+When Energy Saving Mode is enabled:
+
+1. Reduce log levels and telemetry levels 
+1. Reduce or turn off health checks
+1. Close all SignalR connections and clients
+1. Flush internal caches
+1. ...
+
+See the provided samples in the [sample](https://github.com/yvzn/dotnet-energy-saving-mode/tree/main/sample) folder
 
 ## Installation
 
@@ -33,11 +43,10 @@ dotnet add package EnergySavingMode --prerelease
 
 ### Configuration
 
-Define a weekly schedule of when application should be in Energy Saving Mode.
+Define a weekly schedule of when Energy Saving Mode is enabled:
 
 The time ranges are expressed in the **local timezone of the server**.
-
-Extra precautions required when server is operating outside the usual timezone
+Extra precautions are required when server is operating outside the usual timezone
 (for instance in another cloud region)
 
 ```jsonc
@@ -46,7 +55,7 @@ Extra precautions required when server is operating outside the usual timezone
     // ...
     "EnergySavingMode" : {
         "Enabled": {
-            "Mon" : [00:00-07:59, 20:00-23:59],
+            "Mon" : ["00:00-07:59", "20:00-23:59"],
             "Tue" : [ /* ... */ ],
             // ...
             "Sun" : [ /* ... */ ]
@@ -55,7 +64,9 @@ Extra precautions required when server is operating outside the usual timezone
 }
 ```
 
-### Registering the EnergySavingMode service
+Outside of this schedule, Energy Saving Mode is disabled.
+
+### Register the EnergySavingMode service
 
 ```csharp
 // Program.cs
@@ -65,7 +76,7 @@ builder.Services.AddEnergySavingMode(
 
 ### Usage
 
-Listen to events when Energy Saving Mode is enabled or disabled — and act act accordingly
+Listen to events and react accordingly when Energy Saving Mode changes:
 
 ```csharp
 public class MyComponent(IEnergySavingModeEvents energySavingMode) {
@@ -88,7 +99,7 @@ public class MyComponent(IEnergySavingModeEvents energySavingMode) {
 }
 ```
 
-Check the Energy Saving Mode status before running intensive tasks
+Check the Energy Saving Mode status before running intensive tasks:
 
 ```csharp
 public class MyComponent(IEnergySavingModeStatus energySavingModeStatus) {
@@ -104,16 +115,6 @@ public class MyComponent(IEnergySavingModeStatus energySavingModeStatus) {
 	}
 }
 ```
-
-## Example scenarios
-
-1. Reduce log levels and telemetry levels when Energy Saving Mode is enabled, and restore them when Energy Saving Mode is disabled
-1. Reduce or turn off health checks
-1. Close all SignalR connections and clients — and configure automatic reconnect
-1. Flush internal caches
-1. ...
-
-See also the provided samples in the [sample](https://github.com/yvzn/dotnet-energy-saving-mode/tree/main/sample) folder
 
 ## License
 
