@@ -46,6 +46,7 @@ namespace EnergySavingMode
 			services.AddSingleton(TimeProvider.System);
 
 			services.AddHostedService<EventTrigger>();
+			services.AddHostedService<EventScheduleLogger>();
 
 			return services;
 		}
