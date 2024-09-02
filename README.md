@@ -29,9 +29,15 @@ When Energy Saving Mode is enabled:
 1. Reduce or turn off health checks
 1. Close all SignalR connections and clients
 1. Flush internal caches
-1. ...
 
-See the provided samples in the [sample](https://github.com/yvzn/dotnet-energy-saving-mode/tree/main/sample) folder
+And ideally:
+
+1. Reduce the number of instances and / or CPU size (scale down / scale in)
+1. Reduce the bandwith usage 
+1. Reduce the storage (especially for logs)
+1. Reduce the usage of pay-per-use services / consumption plans
+
+See the provided samples in the [sample](https://github.com/yvzn/dotnet-energy-saving-mode/tree/main/sample) folder.
 
 ## Installation
 
@@ -76,7 +82,7 @@ builder.Services.AddEnergySavingMode(
 
 ### Usage
 
-Listen to events and react accordingly when Energy Saving Mode changes:
+Listen to events asynchronously and react accordingly when Energy Saving Mode changes:
 
 ```csharp
 public class MyComponent(IEnergySavingModeEvents energySavingMode) {
@@ -87,12 +93,12 @@ public class MyComponent(IEnergySavingModeEvents energySavingMode) {
 		energySavingMode.OnDisabled(EnergySavingMode_Disabled);
 	}
 	
-	private Task EnergySavingMode_Enabled()
+	private Task EnergySavingMode_Enabled(CancellationToken cancellationToken)
 	{
 		// ...
 	}
 
-	private Task EnergySavingMode_Disabled()
+	private Task EnergySavingMode_Disabled(CancellationToken cancellationToken)
 	{
 		// ...
 	}

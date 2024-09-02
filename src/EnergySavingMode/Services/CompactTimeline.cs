@@ -8,7 +8,7 @@ internal class CompactTimeline(Timeline timeline): ITimeline
 	{
 		EventOccurence? previous = default;
 
-		var enumerator = timeline.GetNextEventOccurences(startingDateTime).GetEnumerator();
+		using var enumerator = timeline.GetNextEventOccurences(startingDateTime).GetEnumerator();
 		while(enumerator.MoveNext())
 		{
 			var current = enumerator.Current;

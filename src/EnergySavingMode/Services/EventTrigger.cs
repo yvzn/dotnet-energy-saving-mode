@@ -16,7 +16,7 @@ internal class EventTrigger(ITimeline timeline, TimeProvider timeProvider, Event
 			return;
 		}
 
-		await eventBroadcast.SendAsync(isEnergySavingModeEnabled: nextEvent.Type == EventType.End);
+		await eventBroadcast.SendAsync(isEnergySavingModeEnabled: nextEvent.Type == EventType.End, stoppingToken);
 
 		var isStopping = false;
 		stoppingToken.Register(() => isStopping = true);
@@ -39,7 +39,7 @@ internal class EventTrigger(ITimeline timeline, TimeProvider timeProvider, Event
 				continue;
 			}
 
-			await eventBroadcast.SendAsync(isEnergySavingModeEnabled: nextEvent.Type == EventType.End);
+			await eventBroadcast.SendAsync(isEnergySavingModeEnabled: nextEvent.Type == EventType.End, stoppingToken);
 		}
 	}
 }

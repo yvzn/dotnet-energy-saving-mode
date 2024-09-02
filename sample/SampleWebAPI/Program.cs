@@ -31,7 +31,7 @@ internal class EnergySavingModeEventHandler(
 	IEnergySavingModeEvents energySavingMode,
 	ILogger<EnergySavingModeEventHandler> logger) : BackgroundService
 {
-	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+	protected override async Task ExecuteAsync(CancellationToken _)
 	{
 		await Task.Yield();
 
@@ -39,13 +39,13 @@ internal class EnergySavingModeEventHandler(
 		energySavingMode.OnDisabled(EnergySavingMode_Disabled);
 	}
 
-	private Task EnergySavingMode_Enabled()
+	private Task EnergySavingMode_Enabled(CancellationToken _)
 	{
 		logger.LogInformation("Energy Saving Mode is Enabled...");
 		return Task.CompletedTask;
 	}
 
-	private Task EnergySavingMode_Disabled()
+	private Task EnergySavingMode_Disabled(CancellationToken _)
 	{
 		logger.LogInformation("Energy Saving Mode is Disabled...");
 		return Task.CompletedTask;

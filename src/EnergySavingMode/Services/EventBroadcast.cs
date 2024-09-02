@@ -15,16 +15,16 @@ internal class EventBroadcast : IEnergySavingModeEvents
 		disabledEventCallbacks.Add(callbackAsync);
 	}
 
-	internal async Task SendAsync(bool isEnergySavingModeEnabled)
+	internal async Task SendAsync(bool isEnergySavingModeEnabled, CancellationToken cancellationToken)
 	{
 		var eventCallbacks = isEnergySavingModeEnabled ? enabledEventCallbacks : disabledEventCallbacks;
-		await InvokeCallbacksAsync(eventCallbacks);
+		await InvokeCallbacksAsync(eventCallbacks, cancellationToken);
 	}
 
-	private static Task InvokeCallbacksAsync(ICollection<EventCallbackAsync> eventCallbacks)
+	private static Task InvokeCallbacksAsync(ICollection<EventCallbackAsync> eventCallbacks, CancellationToken cancellationToken)
 	{
 		// do not wait for completion and return immediately
-		_ = Task.WhenAll(eventCallbacks.Select(x => x.Invoke()));
+		_ = Task.WhenAll(eventCallbacks.Select(x => x.Invoke(cancellationToken)));
 
 		return Task.CompletedTask;
 	}

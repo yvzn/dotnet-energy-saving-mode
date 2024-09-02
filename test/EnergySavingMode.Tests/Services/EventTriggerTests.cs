@@ -27,7 +27,7 @@ public class EventTriggerTests
 			var timeProvider = new FakeTimeProvider(now);
 
 			var isEnabledEventTriggered = false;
-			Task OnEnabledCallback() => Task.FromResult(isEnabledEventTriggered = true);
+			Task OnEnabledCallback(CancellationToken _) => Task.FromResult(isEnabledEventTriggered = true);
 
 			var eventBroadcast = new EventBroadcast();
 			eventBroadcast.OnEnabled(OnEnabledCallback);
@@ -60,7 +60,7 @@ public class EventTriggerTests
 			var timeProvider = new FakeTimeProvider(now);
 
 			var isDisabledEventTriggered = false;
-			Task OnDisabledCallback() => Task.FromResult(isDisabledEventTriggered = true);
+			Task OnDisabledCallback(CancellationToken _) => Task.FromResult(isDisabledEventTriggered = true);
 
 			var eventBroadcast = new EventBroadcast();
 			eventBroadcast.OnDisabled(OnDisabledCallback);
@@ -124,7 +124,7 @@ public class EventTriggerTests
 			var timeProvider = new FakeTimeProvider(now);
 
 			var isEnabledEventTriggered = false;
-			Task OnEnabledCallback() => Task.FromResult(isEnabledEventTriggered = true);
+			Task OnEnabledCallback(CancellationToken _) => Task.FromResult(isEnabledEventTriggered = true);
 
 			var eventBroadcast = new EventBroadcast();
 			eventBroadcast.OnEnabled(OnEnabledCallback);
@@ -163,10 +163,10 @@ public class EventTriggerTests
 			var timeProvider = new FakeTimeProvider(now);
 
 			int enabledEventCount = 0;
-			Task OnEnabledCallback() => Task.FromResult(++enabledEventCount);
+			Task OnEnabledCallback(CancellationToken _) => Task.FromResult(++enabledEventCount);
 
 			int disabledEventCount = 0;
-			Task OnDisabledCallback() => Task.FromResult(++disabledEventCount);
+			Task OnDisabledCallback(CancellationToken _) => Task.FromResult(++disabledEventCount);
 
 			var eventBroadcast = new EventBroadcast();
 			eventBroadcast.OnEnabled(OnEnabledCallback);

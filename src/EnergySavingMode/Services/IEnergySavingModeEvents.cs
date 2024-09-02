@@ -7,4 +7,4 @@ public interface IEnergySavingModeEvents
 	public void OnDisabled(EventCallbackAsync callbackAsync);
 }
 
-public delegate Task EventCallbackAsync();
+public delegate Task EventCallbackAsync(CancellationToken cancellationToken);
