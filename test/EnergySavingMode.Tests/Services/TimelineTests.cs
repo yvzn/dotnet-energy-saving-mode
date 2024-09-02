@@ -160,6 +160,57 @@ public class TimelineTests
 			// Assert
 			result.Should().BeEmpty();
 		}
+
+		[Fact]
+		public void Should_ignore_start_event_when_exactly_the_same_time_as_now()
+		{
+			// Arrange
+			var configuration = new Configuration()
+			{
+				Schedule =
+				{
+					[DayOfWeek.Monday] = [new (new (12, 0), new (15, 0))]
+				}
+			};
+
+			Timeline sut = new(Opts.Create(configuration));
+
+			var dateTime = new DateTime(2024, 6, 10, 12, 0, 0, 0, DateTimeKind.Local);
+
+			// Act
+			var result = sut.GetNextEventSeries(dateTime);
+
+			// Assert
+			result.FirstOrDefault().Should().NotBe(
+				new SeriesEvent(DayOfWeek.Monday, new(12, 0), EventType.Start, daysElapsed: 0)
+				);
+		}
+
+
+		[Fact]
+		public void Should_ignore_end_event_when_exactly_the_same_time_as_now()
+		{
+			// Arrange
+			var configuration = new Configuration()
+			{
+				Schedule =
+				{
+					[DayOfWeek.Monday] = [new (new (12, 0), new (15, 0))]
+				}
+			};
+
+			Timeline sut = new(Opts.Create(configuration));
+
+			var dateTime = new DateTime(2024, 6, 10, 15, 0, 0, 0, DateTimeKind.Local);
+
+			// Act
+			var result = sut.GetNextEventSeries(dateTime);
+
+			// Assert
+			result.FirstOrDefault().Should().NotBe(
+				new SeriesEvent(DayOfWeek.Monday, new(15, 0), EventType.End, daysElapsed: 0)
+			);
+		}
 	}
 
 	public class GetNextConcreteEvents()
