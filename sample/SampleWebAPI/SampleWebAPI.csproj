@@ -11,4 +11,10 @@
 		<ProjectReference Include="..\..\src\EnergySavingMode\EnergySavingMode.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<!-- https://www.meziantou.net/declaring-internalsvisibleto-in-the-csproj.htm -->
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>$(AssemblyName).Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 </Project>

@@ -27,6 +27,11 @@ app.Run();
 
 
 
+public partial class Program { }
+
+
+
+
 internal class EnergySavingModeEventHandler(
 	IEnergySavingModeEvents energySavingMode,
 	ILogger<EnergySavingModeEventHandler> logger) : BackgroundService
