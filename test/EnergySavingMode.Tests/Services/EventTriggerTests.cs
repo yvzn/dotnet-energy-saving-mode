@@ -1,5 +1,7 @@
 using EnergySavingMode.Services;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 using Configuration = EnergySavingMode.Options.Configuration;
 using Opts = Microsoft.Extensions.Options.Options;
 
@@ -29,7 +31,7 @@ public class EventTriggerTests
 			var isEnabledEventTriggered = false;
 			Task OnEnabledCallback(CancellationToken _) => Task.FromResult(isEnabledEventTriggered = true);
 
-			var eventBroadcast = new EventBroadcast();
+			var eventBroadcast = new EventBroadcast(Substitute.For<ILogger<EventBroadcast>>());
 			eventBroadcast.OnEnabled(OnEnabledCallback);
 
 			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
@@ -62,7 +64,7 @@ public class EventTriggerTests
 			var isDisabledEventTriggered = false;
 			Task OnDisabledCallback(CancellationToken _) => Task.FromResult(isDisabledEventTriggered = true);
 
-			var eventBroadcast = new EventBroadcast();
+			var eventBroadcast = new EventBroadcast(Substitute.For<ILogger<EventBroadcast>>());
 			eventBroadcast.OnDisabled(OnDisabledCallback);
 
 			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
@@ -92,7 +94,7 @@ public class EventTriggerTests
 			var now = new DateTime(2024, 6, 10, 10, 30, 0, 0, DateTimeKind.Local);
 			var timeProvider = new FakeTimeProvider(now);
 
-			var eventBroadcast = new EventBroadcast();
+			var eventBroadcast = new EventBroadcast(Substitute.For<ILogger<EventBroadcast>>());
 
 			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
 
@@ -126,7 +128,7 @@ public class EventTriggerTests
 			var isEnabledEventTriggered = false;
 			Task OnEnabledCallback(CancellationToken _) => Task.FromResult(isEnabledEventTriggered = true);
 
-			var eventBroadcast = new EventBroadcast();
+			var eventBroadcast = new EventBroadcast(Substitute.For<ILogger<EventBroadcast>>());
 			eventBroadcast.OnEnabled(OnEnabledCallback);
 
 			EventTrigger sut = new(timeline, timeProvider, eventBroadcast);
@@ -168,7 +170,7 @@ public class EventTriggerTests
 			int disabledEventCount = 0;
 			Task OnDisabledCallback(CancellationToken _) => Task.FromResult(++disabledEventCount);
 
-			var eventBroadcast = new EventBroadcast();
+			var eventBroadcast = new EventBroadcast(Substitute.For<ILogger<EventBroadcast>>());
 			eventBroadcast.OnEnabled(OnEnabledCallback);
 			eventBroadcast.OnDisabled(OnDisabledCallback);
 

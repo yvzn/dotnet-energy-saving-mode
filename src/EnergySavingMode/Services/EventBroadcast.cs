@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Logging;
+
 namespace EnergySavingMode.Services;
 
-internal class EventBroadcast : IEnergySavingModeEvents
+public class EventBroadcast(ILogger<EventBroadcast> logger) : IEnergySavingModeEvents
 {
 	private readonly ICollection<EventCallbackAsync> enabledEventCallbacks = [];
 	private readonly ICollection<EventCallbackAsync> disabledEventCallbacks = [];
@@ -21,11 +23,20 @@ internal class EventBroadcast : IEnergySavingModeEvents
 		await InvokeCallbacksAsync(eventCallbacks, cancellationToken);
 	}
 
-	private static Task InvokeCallbacksAsync(ICollection<EventCallbackAsync> eventCallbacks, CancellationToken cancellationToken)
+	private Task InvokeCallbacksAsync(ICollection<EventCallbackAsync> eventCallbacks, CancellationToken cancellationToken)
 	{
 		// do not wait for completion and return immediately
-		_ = Task.WhenAll(eventCallbacks.Select(x => x.Invoke(cancellationToken)));
+		_ = Task.WhenAll(eventCallbacks.Select(x => InvokeCallbackAsync(x, cancellationToken)));
 
 		return Task.CompletedTask;
+	}
+
+	private async Task InvokeCallbackAsync(EventCallbackAsync eventCallback, CancellationToken cancellationToken)
+	{
+		try {
+			await eventCallback.Invoke(cancellationToken);
+		} catch (Exception ex) {
+			logger.LogError(ex, "Error while invoking callback on EnergySavingMode event");
+		}
 	}
 }
