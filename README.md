@@ -3,6 +3,9 @@
 Automatically pause parts of application outside business hours
 and optimise for cloud costs (FinOps) and efficiency (GreenOps)
 
+[![Build Status](https://dev.azure.com/yvzn/dotnet-energy-saving-mode/_apis/build/status%2Fyvzn.dotnet-energy-saving-mode?branchName=main)](https://dev.azure.com/yvzn/dotnet-energy-saving-mode/_build/latest?definitionId=22&branchName=main) [![NuGet Version](https://img.shields.io/nuget/vpre/EnergySavingMode)
+](https://www.nuget.org/packages/EnergySavingMode/)
+
 ## Description
 
 An option to reduce cloud costs or carbon footprint of an application, is to reduce
@@ -55,7 +58,7 @@ The time ranges are expressed in the **local timezone of the server**.
 Extra precautions are required when server is operating outside the usual timezone
 (for instance in another cloud region)
 
-```jsonc
+```json
 // appsettings.json
 {
     // ...
