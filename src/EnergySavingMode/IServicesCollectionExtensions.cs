@@ -17,6 +17,16 @@ namespace EnergySavingMode
 			return services;
 		}
 
+		public static IServiceCollection AddEnergySavingMode(
+			this IServiceCollection services,
+			Action<IDictionary<DayOfWeek, ICollection<Options.TimeRange>>> configureSchedule)
+		{
+			services.AddEnergySavingModeOptions(configureSchedule);
+			services.AddEnergySavingModeServices();
+
+			return services;
+		}
+
 		private static IServiceCollection AddEnergySavingModeOptions(
 			this IServiceCollection services,
 			IConfigurationSection configurationSection)
@@ -24,9 +34,31 @@ namespace EnergySavingMode
 			services.AddOptions();
 
 			services.Configure<Options.Settings>(configurationSection);
-			services.AddSingleton<IValidateOptions<Options.Settings>, Options.SettingsValidation>();
-
 			services.ConfigureOptions<Options.ConfigureFromAppSettings>();
+
+			services.AddEnergySavingModeOptionValidation();
+
+			return services;
+		}
+
+		private static IServiceCollection AddEnergySavingModeOptions(
+			this IServiceCollection services,
+			Action<IDictionary<DayOfWeek, ICollection<Options.TimeRange>>> configureSchedule)
+		{
+			services.AddOptions();
+
+			services.AddOptions<Options.Settings>();
+			services.Configure<Options.Configuration>(options => configureSchedule(options.Schedule));
+
+			services.AddEnergySavingModeOptionValidation();
+
+			return services;
+		}
+
+		private static IServiceCollection AddEnergySavingModeOptionValidation(
+			this IServiceCollection services)
+		{
+			services.AddSingleton<IValidateOptions<Options.Settings>, Options.SettingsValidation>();
 			services.AddSingleton<IValidateOptions<Options.Configuration>, Options.ConfigurationValidation>();
 
 			services.AddOptionsWithValidateOnStart<Options.Settings>();

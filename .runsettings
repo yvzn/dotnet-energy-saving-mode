@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+	<DataCollectionRunSettings>
+		<DataCollectors>
+			<!-- https://stackoverflow.com/a/72642304 -->
+			<!-- https://learn.microsoft.com/en-us/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file -->
+			<DataCollector friendlyName="XPlat code coverage">
+				<Configuration>
+					<ModulePaths>
+						<Exclude>
+							<ModulePath>.*ConfigurationAsCode.*</ModulePath>
+						</Exclude>
+					</ModulePaths>
+				</Configuration>
+			</DataCollector>
+		</DataCollectors>
+	</DataCollectionRunSettings>
+</RunSettings>

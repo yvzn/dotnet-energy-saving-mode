@@ -1,0 +1,6 @@
+@ConfigurationAsCode_HostAddress = http://localhost:5103
+
+GET {{ConfigurationAsCode_HostAddress}}/
+Accept: application/json
+
+###

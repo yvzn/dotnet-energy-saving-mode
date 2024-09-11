@@ -26,7 +26,7 @@ jobs:
     inputs:
       command: 'test'
       projects: '*.sln'
-      arguments: '--configuration Release --no-build --no-restore --collect:"XPlat Code Coverage"'
+      arguments: '--configuration Release --no-build --no-restore --collect:"XPlat Code Coverage" --settings:.runsettings'
   - task: PublishCodeCoverageResults@2
     inputs:
       summaryFileLocation: $(Agent.TempDirectory)/**/coverage.cobertura.xml
