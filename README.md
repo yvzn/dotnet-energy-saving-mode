@@ -58,7 +58,7 @@ The time ranges are expressed in the **local timezone of the server**.
 Extra precautions are required when server is operating outside the usual timezone
 (for instance in another cloud region)
 
-```json
+```jsonc
 // appsettings.json
 {
     // ...
