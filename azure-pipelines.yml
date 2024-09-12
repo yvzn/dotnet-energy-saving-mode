@@ -1,12 +1,15 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# name is required for byBuildNumber versioningScheme
+# see https://learn.microsoft.com/en-us/azure/devops/pipelines/artifacts/nuget?view=azure-devops&tabs=yaml#package-versioning
+name: $(Major).$(Minor).$(NumberOfBuilds)
 
 variables:
   Major: '0'
-  Minor: '0'
-  Patch: '1'
+  Minor: '1'
+  MajorMinorVersion: ${{ format('{0}.{1}', variables['Major'], variables['Minor']) }}
+  # NumberOfBuilds counter is automatically incremented by one in each pipeline execution
+  # second parameter is a seed value, resets when referenced MajorMinorVersion is changed
+  # see https://stackoverflow.com/a/56111209
+  NumberOfBuilds: $[counter(variables['MajorMinorVersion'], 0)]
 
 trigger:
 - main
@@ -35,10 +38,7 @@ jobs:
       command: 'pack'
       packagesToPack: 'src/EnergySavingMode/*.csproj'
       nobuild: true
-      versioningScheme: 'byPrereleaseNumber'
-      majorVersion: '$(Major)'
-      minorVersion: '$(Minor)'
-      patchVersion: '$(Patch)'
+      versioningScheme: byBuildNumber
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
